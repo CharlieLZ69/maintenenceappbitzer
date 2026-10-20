@@ -47,8 +47,9 @@
         box.style.display = 'block';
         box.innerHTML = 'Consultando manual técnico en AI Studio...';
 
-        const apiKey = "AQ.Ab8RN6LO3syGbtYC1iGqEy5iK_PpZo_77sOep8r4MZwG52a0qg"; 
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`;
+        const apiKey = "AQ.Ab8RN6Lx1hm3ALAYCITZSBp33kzvGGgKUQVCFhNo61wBLsvnKQ"; 
+        // Actualizado al modelo compatible actual
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`;
 
         const promptContexto = `Actúa como un experto en mantenimiento de compresores Bitzer (Manual SB-500-2)[cite: 1]. El equipo es ${equipoId}. El técnico reporta la siguiente falla o síntoma: "${descripcionFalla}". Da un diagnóstico estructurado de causa probable (ej. sello de eje / garniture d'étanchéité, fugas de aceite o refrigerante), precauciones de seguridad e instrucciones de reparación según el manual[cite: 3, 26].`;
 
@@ -80,6 +81,5 @@
         }
     }
 </script>
-
 </body>
 </html>
