@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asistente Técnico - Compresor Bitzer</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f6f8; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h2 { color: #d9534f; margin-top: 0; }
+        .badge { background: #5bc0de; color: white; padding: 5px 10px; border-radius: 4px; font-size: 12px; }
+        label { font-weight: bold; display: block; margin-top: 15px; }
+        textarea, select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { background: #0275d8; color: white; border: none; padding: 12px 20px; margin-top: 15px; cursor: pointer; width: 100%; border-radius: 4px; font-size: 16px; }
+        button:hover { background: #025aa5; }
+        #response-box { margin-top: 20px; background: #eef9ff; border-left: 5px solid #0275d8; padding: 15px; border-radius: 4px; white-space: pre-line; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Asistente de Fallas - Bitzer OS Series</h2>
+    <span class="badge" id="eq-badge">Equipo: Cargando...</span>
+
+    <label for="falla">Describa la falla, síntoma o código de error:</label>
+    <textarea id="falla" rows="4" placeholder="Ej: El compresor se detuvo por el presóstato de aceite, suena burbujeo en la mirilla..."></textarea>
+
+    <button onclick="consultarIA()">Consultar Solución Técnica</button>
+
+    <div id="response-box"></div>
+</div>
+
+<script>
+    // Obtener el ID del equipo desde la URL del QR (Ej: ?equipo=COMPRENSOR-01)
+    const urlParams = new URLSearchParams(window.location.search);
+    const equipoId = urlParams.get('equipo') || 'Bitzer-OS-General';
+    document.getElementById('eq-badge').innerText = `Equipo Conectado: ${equipoId}`;
+
+    function consultarIA() {
+        const descripcionFalla = document.getElementById('falla').value;
+        const box = document.getElementById('response-box');
+        
+        if (!descripcionFalla) {
+            alert('Por favor describe la falla.');
+            return;
+        }
+
+        box.style.display = 'block';
+        box.innerHTML = 'Consultando manual técnico y generando diagnóstico...';
+
+        // Aquí conectarías la petición hacia tu backend o la API de Google AI Studio con la clave configurada
+        setTimeout(() => {
+            box.innerHTML = `<strong>Diagnóstico Sugerido (Basado en Manual SB-500-2):</strong>\n\n` +
+                            `1. <strong>Verificación de Seguridad:</strong> Compruebe que el sistema esté despresurizado antes de intervenir y use gafas de protección[cite: 3].\n` +
+                            `2. <strong>Causa Probable:</strong> Posible caída de presión diferencial de aceite o mezcla excesiva de refrigerante en el cárter durante el paro.\n` +
+                            `3. <strong>Acción Correctiva:</strong> Revise el nivel de aceite en el visor del separador[cite: 19], verifique el estado del filtro de aceite (sustituir si la caída de presión es > 0.5 bar)[cite: 24] y compruebe el funcionamiento de la resistencia de cárter[cite: 14].`;
+        }, 1500);
+    }
+</script>
+
+</body>
+</html>
