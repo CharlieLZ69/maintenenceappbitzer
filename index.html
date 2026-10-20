@@ -29,49 +29,56 @@
 
     <div id="response-box"></div>
 </div>
-
 <script>
-    // Obtener el ID del equipo desde la URL del QR (Ej: ?equipo=COMPRENSOR-01)
+    // Obtener el ID del equipo desde la URL del QR (Ej: ?equipo=COMPRESOR-01)
     const urlParams = new URLSearchParams(window.location.search);
     const equipoId = urlParams.get('equipo') || 'Bitzer-OS-General';
     document.getElementById('eq-badge').innerText = `Equipo Conectado: ${equipoId}`;
 
-async function consultarIA() {
-    const descripcionFalla = document.getElementById('falla').value;
-    const box = document.getElementById('response-box');
-    
-    if (!descripcionFalla) {
-        alert('Por favor describe la falla.');
-        return;
-    }
-
-    box.style.display = 'block';
-    box.innerHTML = 'Consultando manual técnico en AI Studio...';
-
-    // Tu API Key de Google AI Studio (reemplaza con tu clave real)
-    const apiKey = "AQ.Ab8RN6Lx1hm3ALAYCITZSBp33kzvGGgKUQVCFhNo61wBLsvnKQ"; 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-
-    const promptContexto = `Actúa como un experto en mantenimiento de compresores Bitzer (Manual SB-500-2). El equipo es ${equipoId}. El técnico reporta la siguiente falla o síntoma: "${descripcionFalla}". Da un diagnóstico estructurado de causa probable, precauciones de seguridad (como presión de gas N2 o superficies calientes) y pasos de solución exactos.`;
-
-    try {
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: promptContexto }] }]
-            })
-        });
-
-        const data = await response.json();
-        const respuestaAI = data.candidates[0].content.parts[0].text;
+    async function consultarIA() {
+        const descripcionFalla = document.getElementById('falla').value;
+        const box = document.getElementById('response-box');
         
-        box.innerHTML = `<strong>Diagnóstico del Asistente IA:</strong><br><br>` + respuestaAI.replace(/\n/g, '<br>');
-    } catch (error) {
-        box.innerHTML = 'Hubo un error al conectar con la IA. Verifica tu clave de API.';
-    }
-}
+        if (!descripcionFalla) {
+            alert('Por favor describe la falla.');
+            return;
+        }
 
+        box.style.display = 'block';
+        box.innerHTML = 'Consultando manual técnico en AI Studio...';
+
+        const apiKey = "AQ.Ab8RN6Lx1hm3ALAYCITZSBp33kzvGGgKUQVCFhNo61wBLsvnKQ"; 
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`;
+
+        const promptContexto = `Actúa como un experto en mantenimiento de compresores Bitzer (Manual SB-500-2)[cite: 1]. El equipo es ${equipoId}. El técnico reporta la siguiente falla o síntoma: "${descripcionFalla}". Da un diagnóstico estructurado de causa probable (ej. sello de eje / garniture d'étanchéité, fugas de aceite o refrigerante), precauciones de seguridad e instrucciones de reparación según el manual[cite: 3, 26].`;
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'x-goog-api-key': apiKey
+                },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: promptContexto }] }]
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error("Detalle del error:", errorData);
+                throw new Error(errorData.error?.message || "Error en la solicitud");
+            }
+
+            const data = await response.json();
+            const respuestaAI = data.candidates[0].content.parts[0].text;
+            
+            box.innerHTML = `<strong>Diagnóstico del Asistente IA:</strong><br><br>` + respuestaAI.replace(/\n/g, '<br>');
+        } catch (error) {
+            console.error(error);
+            box.innerHTML = `<strong>Error al conectar con la IA:</strong> ${error.message}.<br><br><small>Abre la consola del navegador (F12) para más detalles.</small>`;
+        }
+    }
 </script>
 
 </body>
