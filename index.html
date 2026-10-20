@@ -36,26 +36,42 @@
     const equipoId = urlParams.get('equipo') || 'Bitzer-OS-General';
     document.getElementById('eq-badge').innerText = `Equipo Conectado: ${equipoId}`;
 
-    function consultarIA() {
-        const descripcionFalla = document.getElementById('falla').value;
-        const box = document.getElementById('response-box');
-        
-        if (!descripcionFalla) {
-            alert('Por favor describe la falla.');
-            return;
-        }
-
-        box.style.display = 'block';
-        box.innerHTML = 'Consultando manual técnico y generando diagnóstico...';
-
-        // Aquí conectarías la petición hacia tu backend o la API de Google AI Studio con la clave configurada
-        setTimeout(() => {
-            box.innerHTML = `<strong>Diagnóstico Sugerido (Basado en Manual SB-500-2):</strong>\n\n` +
-                            `1. <strong>Verificación de Seguridad:</strong> Compruebe que el sistema esté despresurizado antes de intervenir y use gafas de protección[cite: 3].\n` +
-                            `2. <strong>Causa Probable:</strong> Posible caída de presión diferencial de aceite o mezcla excesiva de refrigerante en el cárter durante el paro.\n` +
-                            `3. <strong>Acción Correctiva:</strong> Revise el nivel de aceite en el visor del separador[cite: 19], verifique el estado del filtro de aceite (sustituir si la caída de presión es > 0.5 bar)[cite: 24] y compruebe el funcionamiento de la resistencia de cárter[cite: 14].`;
-        }, 1500);
+async function consultarIA() {
+    const descripcionFalla = document.getElementById('falla').value;
+    const box = document.getElementById('response-box');
+    
+    if (!descripcionFalla) {
+        alert('Por favor describe la falla.');
+        return;
     }
+
+    box.style.display = 'block';
+    box.innerHTML = 'Consultando manual técnico en AI Studio...';
+
+    // Tu API Key de Google AI Studio (reemplaza con tu clave real)
+    const apiKey = "AQ.Ab8RN6Lx1hm3ALAYCITZSBp33kzvGGgKUQVCFhNo61wBLsvnKQ"; 
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+    const promptContexto = `Actúa como un experto en mantenimiento de compresores Bitzer (Manual SB-500-2). El equipo es ${equipoId}. El técnico reporta la siguiente falla o síntoma: "${descripcionFalla}". Da un diagnóstico estructurado de causa probable, precauciones de seguridad (como presión de gas N2 o superficies calientes) y pasos de solución exactos.`;
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: promptContexto }] }]
+            })
+        });
+
+        const data = await response.json();
+        const respuestaAI = data.candidates[0].content.parts[0].text;
+        
+        box.innerHTML = `<strong>Diagnóstico del Asistente IA:</strong><br><br>` + respuestaAI.replace(/\n/g, '<br>');
+    } catch (error) {
+        box.innerHTML = 'Hubo un error al conectar con la IA. Verifica tu clave de API.';
+    }
+}
+
 </script>
 
 </body>
