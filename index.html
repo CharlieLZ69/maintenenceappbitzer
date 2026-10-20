@@ -17,7 +17,6 @@
     </style>
 </head>
 <body>
-
 <div class="container">
     <h2>Asistente de Fallas - Bitzer OS Series</h2>
     <span class="badge" id="eq-badge">Equipo: Cargando...</span>
@@ -48,17 +47,16 @@
         box.innerHTML = 'Consultando manual técnico en AI Studio...';
 
         const apiKey = "AQ.Ab8RN6Lx1hm3ALAYCITZSBp33kzvGGgKUQVCFhNo61wBLsvnKQ"; 
-        // Actualizado al modelo exacto que solicita la API de Google
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent`;
+        // Usamos gemini-1.5-flash con la clave directamente en el parámetro URL para mayor estabilidad
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
-        const promptContexto = `Actúa como un experto en mantenimiento de compresores Bitzer (Manual SB-500-2)[cite: 1]. El equipo es ${equipoId}. El técnico reporta la siguiente falla o síntoma: "${descripcionFalla}". Da un diagnóstico estructurado de causa probable (ej. sello de eje / garniture d'étanchéité, fugas de aceite o refrigerante), precauciones de seguridad e instrucciones de reparación según el manual[cite: 3, 26].`;
+        const promptContexto = `Actúa como un experto en mantenimiento de compresores Bitzer (Manual SB-500-2)[cite: 1]. El equipo es ${equipoId}. El técnico reporta la siguiente falla o síntoma: "${descripcionFalla}". Da un diagnóstico estructurado de causa probable (ej. sello de eje / garniture d'étanchéité, fugas de aceite o refrigerante), precauciones de seguridad e instrucciones de reparación según el manual[cite: 3].`;
 
         try {
             const response = await fetch(url, {
                 method: 'POST',
                 headers: { 
-                    'Content-Type': 'application/json',
-                    'x-goog-api-key': apiKey
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                     contents: [{ parts: [{ text: promptContexto }] }]
